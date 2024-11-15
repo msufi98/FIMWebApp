@@ -1,0 +1,23 @@
+LIST ELEMENTS
+ aws s3 ls s3://noaa-nws-owp-fim/hand_fim/ --request-payer
+
+GET HUC8 DATA
+aws s3 sync s3://noaa-nws-owp-fim/hand_fim/fim_4_5_2_11/<HUC 8> "C:\Projects\CIROH_DEVCON\HUC8 Data Sources\<HUC8>" --profile esip 
+
+
+
+docker run --rm -it --name fimrun -v `
+C:\Projects\CIROH_DEVCON\inundation-mapping\:/foss_fim -v `
+C:\Projects\CIROH_DEVCON\output\:/outputs -v `
+C:\Projects\CIROH_DEVCON\outputs_temp\:/fim_temp -v `
+C:\Projects\CIROH_DEVCON\Data\:/data 12090301:latest
+
+python foss_fim/tools/inundate_mosaic_wrapper.py -y /outputs/flood_12090301 -u 12090301 -f /data/Inputs/rating_curve/bankfull_flows/12090301_2year_return_period.csv -i /outputs/flood_12090301/2_year_event/inundation.tif -d /outputs/flood_12090301/2_year_event/depth.tif -w 4
+
+
+root@76e9a00197a6:/# python foss_fim/tools/inundate_mosaic_wrapper.py -y /outputs/flood_07080209 -u 07080209 -f /data/Inputs/rating_curve/bankfull_flows/201810061600_T-Route_DW_noDA.csv -i /outputs/flood_07080209/201810061600_T-Route_DW_noDA/inundation.tif -d /outputs/flood_07080209/201810061600_T-Route_DW_noDA/depth.tif -w 4
+Completed in 1.2 minutes.
+root@76e9a00197a6:/# python foss_fim/tools/inundate_mosaic_wrapper.py -y /outputs/flood_07080209 -u 07080209 -f /data/Inputs/rating_curve/bankfull_flows/201810061600_T-Route_MC_DA.csv -i /outputs/flood_07080209/201810061600_T-Route_MC_DA/inundation.tif -d /outputs/flood_07080209/201810061600_T-Route_MC_DA/depth.tif -w 4
+Completed in 1.21 minutes.
+root@76e9a00197a6:/# python foss_fim/tools/inundate_mosaic_wrapper.py -y /outputs/flood_07080209 -u 07080209 -f /data/Inputs/rating_curve/bankfull_flows/201810061600_WRF-Hydro_DA.csv -i /outputs/flood_07080209/201810061600_WRF-Hydro_DA/inundation.tif -d /outputs/flood_07080209/201810061600_WRF-Hydro_DA/depth.tif -w 4
+Completed in 1.18 minutes.
