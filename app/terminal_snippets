@@ -1,0 +1,16 @@
+>> Launch App
+docker build -t fim-webapp .
+
+
+docker run --rm -it --name fimrun -v `
+C:\Projects\CIROH_DEVCON\inundation-mapping\:/foss_fim -v `
+C:\Projects\CIROH_DEVCON\output\:/outputs -v `
+C:\Projects\CIROH_DEVCON\outputs_temp\:/fim_temp -v `
+C:\Projects\CIROH_DEVCON\Data\:/data fim-webapp:latest
+
+
+docker build -t fim-webapp . | docker run --rm -p 5000:5000 --name fimrun -v `
+C:\Projects\CIROH_DEVCON\inundation-mapping\:/foss_fim -v `
+C:\Projects\CIROH_DEVCON\output\:/outputs -v `
+C:\Projects\CIROH_DEVCON\outputs_temp\:/fim_temp -v `
+C:\Projects\CIROH_DEVCON\Data\:/data fim-webapp:latest

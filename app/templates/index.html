@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inundation Mapping Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .error {
+            color: red;
+            display: none;
+        }
+        .success {
+            color: green;
+            display: none;
+        }
+        #loading {
+            display: none;
+        }
+        #output {
+            white-space: pre-wrap;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Inundation Mapping Tool</h1>
+    
+    <div class="form-group">
+        <form id="processForm">
+            <label for="code">Enter 8-digit HUC code:</label>
+            <input type="text" id="code" name="code" pattern="[0-9]{8}" required>
+            <br/>
+            <button type="submit">Process</button>
+        </form>
+    </div>
+
+    <div id="loading">Processing... Please wait...</div>
+    <div id="error" class="error"></div>
+    <div id="success" class="success"></div>
+    <pre id="output"></pre>
+
+    <script>
+        document.getElementById('processForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const code = document.getElementById('code').value;
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const success = document.getElementById('success');
+            const output = document.getElementById('output');
+            
+            // Reset displays
+            error.style.display = 'none';
+            success.style.display = 'none';
+            output.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `code=${code}`
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    success.textContent = data.message;
+                    success.style.display = 'block';
+                    output.textContent = data.output;
+                    output.style.display = 'block';
+
+                    // Check if output files exist
+                    const outputCheck = await fetch(`/check_output/${code}`);
+                    const fileStatus = await outputCheck.json();
+                    
+                    if (fileStatus.inundation && fileStatus.depth) {
+                        success.textContent += '\nOutput files generated successfully!';
+                    }
+                } else {
+                    error.textContent = data.message || 'An error occurred';
+                    error.style.display = 'block';
+                    if (data.error) {
+                        output.textContent = data.error;
+                        output.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                error.textContent = 'An error occurred while processing the request';
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
